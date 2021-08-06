@@ -27,4 +27,4 @@ RUN git clone https://github.com/nodejs/node.git /home/nodejs/node
 WORKDIR /home/nodejs/node
 
 # Prebuild Node.js
-RUN ./configure && make -j2 V=
+RUN ./configure && make -j2 V= test
