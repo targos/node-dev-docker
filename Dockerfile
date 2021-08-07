@@ -15,16 +15,13 @@ RUN (yes | unminimize) && \
     rm -rf /var/lib/apt/lists/*
 
 # Create nodejs user.
-RUN adduser --disabled-password --gecos "" nodejs && \
-    # Setup ccache for nodejs user.
-    echo 'export PATH="/usr/lib/ccache:$PATH"' | tee -a /home/nodejs/.bashrc
+RUN adduser --disabled-password --gecos "" nodejs
 
 USER nodejs
 
 # Setup npm and install global packages.
 RUN mkdir ~/.npm-global && \
     npm config set prefix '~/.npm-global' && \
-    echo 'export PATH="~/.npm-global/bin:$PATH"' | tee -a /home/nodejs/.bashrc && \
     npm install -g node-core-utils
 
 # Setup Node.js repository
@@ -33,6 +30,9 @@ RUN git clone https://github.com/nodejs/node.git /home/nodejs/node
 WORKDIR /home/nodejs/node
 
 SHELL ["/bin/bash", "-c"]
+
+# Add ccache and npm global packages to PATH
+ENV PATH ~/.npm-global/bin:/usr/lib/ccache:$PATH
 
 # Prebuild Node.js
 RUN source $HOME/.bashrc && \
