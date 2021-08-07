@@ -29,15 +29,14 @@ RUN git clone https://github.com/nodejs/node.git /home/nodejs/node
 
 WORKDIR /home/nodejs/node
 
-SHELL ["/bin/bash", "-c"]
-
 # Add ccache and npm global packages to PATH
 ENV PATH ~/.npm-global/bin:/usr/lib/ccache:$PATH
 
 # Prebuild Node.js
-RUN source $HOME/.bashrc && \
-    python configure.py --ninja && ninja -C out/Release -j 2 && \
-    make test
-    # Remove build artifacts to make the image lighter. ccache will help to rebuild things fast.
-    # TODO: It seems that ninja isn't used in the previous command...
-    # rm -rf out/
+RUN python configure.py --ninja && \
+    ninja -C out/Release -j 2 && \
+    make test && \
+    # Remove large build artifacts to make the image lighter. ccache will help to rebuild things fast.
+    rm -rf out/Release/obj && \
+    rm -f out/Release/*.a && \
+    rm -rf out/Release/gen
